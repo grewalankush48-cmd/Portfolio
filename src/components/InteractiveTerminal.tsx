@@ -1,256 +1,275 @@
 'use client';
 
 import { useState, useRef, useEffect } from 'react';
-import { personalInfo, skillsData, projectsData } from '../data/portfolioData';
-import { Terminal, RotateCcw, Sparkles, Shield, Play } from 'lucide-react';
+import { personalInfo, projectsData, skillsData } from '../data/portfolioData';
+import { Terminal as TerminalIcon, Sparkles, XCircle, Minimize2, Maximize2, ShieldAlert } from 'lucide-react';
 
-interface HistoryEntry {
-  command: string;
-  output: React.ReactNode;
-  time: string;
+interface TerminalLine {
+  id: string;
+  type: 'input' | 'output' | 'error' | 'system';
+  content: string;
 }
 
 export default function InteractiveTerminal() {
   const [inputVal, setInputVal] = useState('');
-  const terminalBottomRef = useRef<HTMLDivElement>(null);
+  const [commandHistory, setCommandHistory] = useState<string[]>([]);
+  const [historyIndex, setHistoryIndex] = useState(-1);
+  const terminalEndRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
-  const initialHistory: HistoryEntry[] = [
-    {
-      command: 'kali-sec-env --load',
-      output: (
-        <div className="space-y-1 text-slate-300 font-mono text-xs">
-          <p className="text-cyan-400 font-bold tracking-wider">
-            ANKUSH GREWAL // KALI LINUX CYBER-CONSOLE v3.8.1
-          </p>
-          <p className="text-slate-400">
-            Defense Node: <span className="text-emerald-400">ACTIVE</span> | Cipher: <span className="text-cyan-300">TLS 1.3 / AES-256-GCM</span>
-          </p>
-          <p className="text-slate-500">
-            Type <span className="text-cyan-400 font-bold underline">help</span> or click the tactical command chips above to launch security modules.
-          </p>
-        </div>
-      ),
-      time: '00:00:01',
-    },
+  const initialLines: TerminalLine[] = [
+    { id: '1', type: 'system', content: 'KALI RED OPS LINUX 6.6.9-kali1-amd64 #1 SMP PREEMPT' },
+    { id: '2', type: 'system', content: 'SYSTEM READY // ALL OFFENSIVE MODULES COMPILED' },
+    { id: '3', type: 'system', content: 'Type "help" to display available cyber commands.' },
   ];
 
-  const [history, setHistory] = useState<HistoryEntry[]>(initialHistory);
+  const [lines, setLines] = useState<TerminalLine[]>(initialLines);
+
+  const scrollToBottom = () => {
+    terminalEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+  };
 
   useEffect(() => {
-    terminalBottomRef.current?.scrollIntoView({ behavior: 'smooth' });
-  }, [history]);
+    scrollToBottom();
+  }, [lines]);
 
-  const handleCommand = (cmdStr: string) => {
-    const trimmed = cmdStr.trim().toLowerCase();
-    if (!trimmed) return;
+  const handleCommand = (e: React.FormEvent) => {
+    e.preventDefault();
+    const cmd = inputVal.trim();
+    if (!cmd) return;
 
-    const timeStr = new Date().toLocaleTimeString();
+    // Add command to history
+    setCommandHistory((prev) => [...prev, cmd]);
+    setHistoryIndex(-1);
 
-    if (trimmed === 'clear') {
-      setHistory([]);
+    // Append input line
+    const userLine: TerminalLine = {
+      id: Date.now().toString(),
+      type: 'input',
+      content: cmd,
+    };
+
+    const cmdLower = cmd.toLowerCase();
+    const newOutputs: TerminalLine[] = [];
+
+    if (cmdLower === 'help') {
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'output',
+        content: `AVAILABLE RED TEAM COMMANDS:
+  help       - List terminal commands
+  whoami     - Display security researcher profile
+  tools      - Enumerate compiled security repositories
+  skills     - Inspect offensive & defensive competencies
+  scan       - Execute simulated port and vulnerability sweep
+  cve        - Check monitored vulnerability zero-days
+  decrypt    - Run cryptographic decipher routine
+  contact    - Retrieve direct transmission channels
+  clear      - Clear terminal screen`,
+      });
+    } else if (cmdLower === 'whoami') {
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'output',
+        content: `OPERATOR: ${personalInfo.name} ${personalInfo.lastName}
+ROLE: ${personalInfo.role}
+INSTITUTION: ${personalInfo.education}
+FOCUS: Penetration Testing, OWASP Top 10, Raw Sockets, Python Tooling
+STATUS: ${personalInfo.availability}`,
+      });
+    } else if (cmdLower === 'tools' || cmdLower === 'projects') {
+      const toolList = projectsData
+        .map((p, i) => `[0${i + 1}] ${p.title} (${p.category}) -> ${p.githubUrl}`)
+        .join('\n');
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'output',
+        content: `COMPILED REPOSITORIES:\n${toolList}`,
+      });
+    } else if (cmdLower === 'skills') {
+      const skillsStr = skillsData
+        .map((s) => `• ${s.title} [${s.level}%] - ${s.tools.join(', ')}`)
+        .join('\n');
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'output',
+        content: `ARSENAL CAPABILITIES:\n${skillsStr}`,
+      });
+    } else if (cmdLower === 'scan') {
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'output',
+        content: `[+] Initializing Nmap SYN Stealth Scan ( -sS -T4 -A )
+[+] Targeting localhost / subnet 192.168.1.0/24...
+[+] PORT 22/tcp   OPEN  OpenSSH 9.6p1 (Debian)
+[+] PORT 80/tcp   OPEN  nginx/1.24.0 (Reverse Proxy)
+[+] PORT 443/tcp  OPEN  TLS 1.3 (ChaCha20-Poly1305)
+[+] PORT 3000/tcp OPEN  Node.js / Next.js Production Engine
+[*] HEURISTICS: 0 vulnerabilities found. System defense intact.`,
+      });
+    } else if (cmdLower === 'cve') {
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'output',
+        content: `[CVE-2026-0041] SQLi Filter Bypass - RESOLVED (Prepared Statements)
+[CVE-2025-4819] Path Traversal in File Server - PATCHED (Canonical Sanitization)
+[CVE-2025-3312] JWT Weak Algorithm Confusion - HARDENED (RS256 Signature Verification)`,
+      });
+    } else if (cmdLower === 'decrypt') {
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'output',
+        content: `[!] INITIALIZING QUANTUM DECIPHER ENGINE...
+[*] CIPHER: 53 65 63 75 72 69 74 79 20 69 73 20 61 20 70 72 6f 63 65 73 73
+[✓] PLAINTEXT: "Security is a process, not a product." - Bruce Schneier`,
+      });
+    } else if (cmdLower === 'contact') {
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'output',
+        content: `EMAIL: ${personalInfo.email}
+GITHUB: ${personalInfo.githubUrl}
+LINKEDIN: ${personalInfo.linkedinUrl}`,
+      });
+    } else if (cmdLower === 'clear') {
+      setLines([]);
       setInputVal('');
       return;
-    }
-
-    let outputNode: React.ReactNode;
-
-    if (trimmed === 'help') {
-      outputNode = (
-        <div className="space-y-1 text-xs font-mono text-slate-300">
-          <p className="text-cyan-400 font-semibold">[SUPPORTED CONSOLE DIRECTIVES]</p>
-          <div className="grid grid-cols-1 sm:grid-cols-2 gap-x-4 gap-y-1 pt-1 text-[11px]">
-            <div><span className="text-cyan-300 font-bold">scan</span> - Execute automated vulnerability scan</div>
-            <div><span className="text-cyan-300 font-bold">cve</span> - Pull live threat advisory feed</div>
-            <div><span className="text-cyan-300 font-bold">decrypt</span> - Derive AES-256 session token</div>
-            <div><span className="text-cyan-300 font-bold">whoami</span> - Identity &amp; security credentials</div>
-            <div><span className="text-cyan-300 font-bold">skills</span> - Dump tool competencies</div>
-            <div><span className="text-cyan-300 font-bold">projects</span> - View developed security tools</div>
-            <div><span className="text-cyan-300 font-bold">clear</span> - Purge screen memory</div>
-          </div>
-        </div>
-      );
-    } else if (trimmed.startsWith('scan')) {
-      outputNode = (
-        <div className="space-y-1.5 text-xs font-mono">
-          <p className="text-cyan-300">[*] Launching multi-threaded socket reconnaissance engine...</p>
-          <div className="space-y-0.5 text-slate-400 text-[11px]">
-            <p>[1/4] Probing TCP ports 80, 443, 8080, 8443... <span className="text-emerald-400">OPEN</span></p>
-            <p>[2/4] Auditing HTTP response headers (CSP, HSTS, X-Frame)... <span className="text-emerald-400">ENFORCED</span></p>
-            <p>[3/4] Fuzzing for OWASP SQLi / Reflected XSS patterns... <span className="text-emerald-400">0 DETECTIONS</span></p>
-            <p>[4/4] Verifying TLS 1.3 curve X25519 handshake... <span className="text-emerald-400">SECURE</span></p>
-          </div>
-          <div className="p-2 bg-emerald-950/60 border border-emerald-500/40 rounded text-emerald-300 text-[11px] mt-1">
-            [+] AUDIT VERDICT: 0 Critical, 0 High. Target hardened against automated exploit payloads.
-          </div>
-        </div>
-      );
-    } else if (trimmed === 'cve') {
-      outputNode = (
-        <div className="space-y-1 text-xs font-mono">
-          <p className="text-amber-400 font-bold">[ACTIVE ZERO-DAY &amp; CVE FEED]</p>
-          <div className="space-y-1 text-[11px] text-slate-300">
-            <p className="text-rose-400">CVE-2026-2189 // CVSS 9.8 (Critical) - Cloud Gateway Auth Bypass</p>
-            <p className="text-amber-400">CVE-2026-1044 // CVSS 7.5 (High) - Async Python Deserialization RCE</p>
-            <p className="text-cyan-300">CVE-2026-0812 // CVSS 5.3 (Medium) - WebSocket Handshake Reflection</p>
-          </div>
-        </div>
-      );
-    } else if (trimmed === 'decrypt') {
-      outputNode = (
-        <div className="space-y-1 text-xs font-mono">
-          <p className="text-cyan-300">[*] Computing PBKDF2-HMAC-SHA256 derived keys (100,000 iterations)...</p>
-          <p className="text-slate-400 text-[11px]">Salt: 9f8a2b3c4d5e6f7a8b9c0d1e2f3a4b5c</p>
-          <div className="p-2 rounded bg-slate-900 border border-cyan-400/40 text-cyan-200 text-[11px]">
-            KEY: 0x4A7F92C8...6E1B // [AUTHENTICATED &amp; DECRYPTED]
-          </div>
-        </div>
-      );
-    } else if (trimmed === 'whoami') {
-      outputNode = (
-        <div className="space-y-1 text-xs font-mono">
-          <p><strong className="text-cyan-400">OPERATOR:</strong> {personalInfo.fullName} ({personalInfo.terminalUser})</p>
-          <p><strong className="text-cyan-400">ACADEMICS:</strong> BCA Cybersecurity Track @ UPES Dehradun</p>
-          <p><strong className="text-cyan-400">FOCUS:</strong> Web Security, Socket Tools, Vulnerability Auditing, Unix Hardening</p>
-        </div>
-      );
-    } else if (trimmed === 'skills') {
-      outputNode = (
-        <div className="space-y-1 text-xs font-mono">
-          <p className="text-cyan-400 font-bold">TECHNICAL INVENTORY:</p>
-          <div className="grid grid-cols-2 gap-1 text-[11px] text-slate-300">
-            {skillsData.map((s) => (
-              <div key={s.id}>• {s.title} ({s.level}%)</div>
-            ))}
-          </div>
-        </div>
-      );
-    } else if (trimmed === 'projects') {
-      outputNode = (
-        <div className="space-y-1.5 text-xs font-mono">
-          <p className="text-cyan-400 font-bold">FEATURED TOOLS:</p>
-          {projectsData.slice(0, 3).map((p) => (
-            <div key={p.id} className="text-[11px]">
-              <span className="text-emerald-400">▸ {p.title}</span> - {p.metrics}
-            </div>
-          ))}
-        </div>
-      );
     } else {
-      outputNode = (
-        <div className="text-xs font-mono text-rose-400">
-          bash: directive not recognized: &quot;{trimmed}&quot;. Type <span className="text-cyan-300 font-bold">help</span> to view directives.
-        </div>
-      );
+      newOutputs.push({
+        id: (Date.now() + 1).toString(),
+        type: 'error',
+        content: `command not found: "${cmd}". Type "help" for a list of valid commands.`,
+      });
     }
 
-    setHistory((prev) => [
-      ...prev,
-      { command: cmdStr, output: outputNode, time: timeStr },
-    ]);
+    setLines((prev) => [...prev, userLine, ...newOutputs]);
     setInputVal('');
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === 'ArrowUp') {
+      e.preventDefault();
+      if (commandHistory.length > 0) {
+        const nextIdx = historyIndex + 1;
+        if (nextIdx < commandHistory.length) {
+          setHistoryIndex(nextIdx);
+          setInputVal(commandHistory[commandHistory.length - 1 - nextIdx]);
+        }
+      }
+    } else if (e.key === 'ArrowDown') {
+      e.preventDefault();
+      if (historyIndex > 0) {
+        const nextIdx = historyIndex - 1;
+        setHistoryIndex(nextIdx);
+        setInputVal(commandHistory[commandHistory.length - 1 - nextIdx]);
+      } else if (historyIndex === 0) {
+        setHistoryIndex(-1);
+        setInputVal('');
+      }
+    }
+  };
+
   return (
-    <section id="terminal" className="py-12 border-b border-cyan-500/20 relative">
+    <section id="terminal" className="py-12 border-b border-red-500/25 relative">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="flex flex-col sm:flex-row sm:items-end justify-between gap-4 mb-6">
+        <div className="mb-6 flex flex-col sm:flex-row sm:items-end justify-between gap-2">
           <div>
-            <div className="inline-flex items-center gap-2 text-xs font-mono text-cyan-400">
-              <span className="w-2 h-2 rounded-full bg-cyan-400 animate-pulse"></span>
-              <span>LIVE INTERACTION CONSOLE</span>
+            <div className="inline-flex items-center gap-2 text-xs font-mono text-red-400">
+              <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+              <span className="font-semibold">INTERACTIVE CLI SIMULATOR</span>
             </div>
-            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight">
-              Kali Security Sandbox
+            <h2 className="text-2xl sm:text-3xl font-extrabold text-white tracking-tight font-orbitron">
+              KALI RED CONSOLE
             </h2>
           </div>
-
-          {/* Quick Click Directives */}
-          <div className="flex flex-wrap items-center gap-1.5 font-mono text-xs">
-            <span className="text-slate-500 text-[10px]">CLICK_TO_EXECUTE:</span>
-            {['help', 'scan', 'cve', 'decrypt', 'whoami', 'clear'].map((cmd) => (
-              <button
-                key={cmd}
-                onClick={() => handleCommand(cmd)}
-                className="px-2.5 py-1 rounded bg-[#060914] border border-cyan-500/30 hover:border-cyan-400 text-cyan-300 text-[11px] transition-colors"
-              >
-                $ {cmd}
-              </button>
-            ))}
-          </div>
+          <span className="text-xs font-mono text-slate-400">
+            Interactive shell · Type <code className="text-red-400 font-bold bg-red-950/80 px-1.5 py-0.5 rounded border border-red-500/40">help</code>
+          </span>
         </div>
 
-        {/* Terminal Container */}
-        <div className="cyber-card rounded-xl overflow-hidden border border-cyan-500/30 shadow-2xl shadow-cyan-950/40 relative">
-          <div className="hud-bracket-tl"></div>
-          <div className="hud-bracket-tr"></div>
-          <div className="hud-bracket-bl"></div>
-          <div className="hud-bracket-br"></div>
-
-          {/* Top Bar */}
-          <div className="bg-[#04060f] px-4 py-2.5 border-b border-cyan-500/20 flex items-center justify-between font-mono text-xs">
+        {/* Terminal Window */}
+        <div className="cyber-card-blood rounded-xl overflow-hidden border border-red-500/40 shadow-2xl">
+          {/* Top Titlebar */}
+          <div className="bg-[#0e0205] px-4 py-2.5 border-b border-red-500/30 flex items-center justify-between font-mono text-xs">
             <div className="flex items-center gap-2">
-              <span className="w-3 h-3 rounded-full bg-rose-500/80 inline-block"></span>
-              <span className="w-3 h-3 rounded-full bg-amber-500/80 inline-block"></span>
-              <span className="w-3 h-3 rounded-full bg-emerald-500/80 inline-block"></span>
-              <span className="text-slate-400 text-[11px] ml-2">ankush@kali-rolling:~ (zsh)</span>
+              <div className="flex items-center gap-1.5">
+                <span className="w-3 h-3 rounded-full bg-red-600/90 border border-red-400/50 block shadow-[0_0_8px_#ff0033]"></span>
+                <span className="w-3 h-3 rounded-full bg-amber-600/90 border border-amber-400/50 block"></span>
+                <span className="w-3 h-3 rounded-full bg-emerald-600/90 border border-emerald-400/50 block"></span>
+              </div>
+              <span className="text-slate-400 ml-2">root@kali-blood:~#</span>
             </div>
-            <div className="flex items-center gap-3 text-[11px] text-slate-400">
-              <span className="text-cyan-400 flex items-center gap-1">
-                <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-                ACTIVE
-              </span>
-              <button
-                onClick={() => setHistory([])}
-                title="Clear terminal"
-                className="hover:text-cyan-300 transition-colors"
-              >
-                <RotateCcw className="w-3.5 h-3.5" />
-              </button>
+            <div className="flex items-center gap-2 text-red-400/80 text-[11px]">
+              <ShieldAlert className="w-3.5 h-3.5 text-red-500" />
+              <span>TLS 1.3 // SESSION ACTIVE</span>
             </div>
           </div>
 
-          {/* Terminal Screen */}
-          <div className="p-4 sm:p-5 space-y-3.5 max-h-[360px] overflow-y-auto leading-relaxed bg-[#03050c]/95">
-            {history.map((item, idx) => (
-              <div key={idx} className="space-y-1 font-mono">
-                <div className="flex items-center gap-2 text-slate-400 text-[11px]">
-                  <span className="text-cyan-400 font-bold">ankush@kali</span>:
-                  <span className="text-emerald-400">~</span>$
-                  <span className="text-white font-medium">{item.command}</span>
-                  <span className="text-slate-600 ml-auto text-[10px]">{item.time}</span>
-                </div>
-                <div className="pl-3 border-l-2 border-cyan-500/30">{item.output}</div>
+          {/* Terminal Screen & Logs */}
+          <div
+            onClick={() => inputRef.current?.focus()}
+            className="p-4 sm:p-6 bg-[#070103]/95 font-code text-xs sm:text-sm min-h-[300px] max-h-[460px] overflow-y-auto space-y-2 cursor-text"
+          >
+            {lines.map((line) => (
+              <div key={line.id} className="leading-relaxed whitespace-pre-wrap">
+                {line.type === 'input' && (
+                  <div className="flex items-start gap-2 text-white">
+                    <span className="text-red-500 font-bold select-none">root@kali-blood:~#</span>
+                    <span>{line.content}</span>
+                  </div>
+                )}
+                {line.type === 'system' && (
+                  <div className="text-red-400/90 select-none">
+                    [SYS] {line.content}
+                  </div>
+                )}
+                {line.type === 'output' && (
+                  <div className="text-slate-300 pl-4 border-l-2 border-red-500/40 my-1 font-mono">
+                    {line.content}
+                  </div>
+                )}
+                {line.type === 'error' && (
+                  <div className="text-rose-400 pl-4 border-l-2 border-rose-600 my-1 font-mono">
+                    [ERR] {line.content}
+                  </div>
+                )}
               </div>
             ))}
-            <div ref={terminalBottomRef} />
+
+            {/* Input Line */}
+            <form onSubmit={handleCommand} className="flex items-center gap-2 text-white pt-1">
+              <span className="text-red-500 font-bold select-none">root@kali-blood:~#</span>
+              <input
+                ref={inputRef}
+                type="text"
+                value={inputVal}
+                onChange={(e) => setInputVal(e.target.value)}
+                onKeyDown={handleKeyDown}
+                autoFocus
+                className="flex-1 bg-transparent border-none outline-none text-white font-code text-xs sm:text-sm"
+                placeholder="type a command (e.g. scan, whoami, tools, cve)..."
+              />
+            </form>
+            <div ref={terminalEndRef} />
           </div>
 
-          {/* Input Prompt */}
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleCommand(inputVal);
-            }}
-            className="p-3 bg-[#050814] border-t border-cyan-500/20 flex items-center gap-2 font-mono text-xs"
-          >
-            <span className="text-cyan-400 font-bold">ankush@kali</span>:
-            <span className="text-emerald-400">~</span>$
-            <input
-              type="text"
-              value={inputVal}
-              onChange={(e) => setInputVal(e.target.value)}
-              placeholder="type 'help', 'scan', 'cve', or 'decrypt'..."
-              className="flex-1 bg-transparent text-white focus:outline-none placeholder:text-slate-600 text-xs"
-              autoComplete="off"
-              spellCheck="false"
-            />
-            <button
-              type="submit"
-              className="px-3.5 py-1 rounded bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 font-bold text-[11px] transition-all shadow-md"
-            >
-              EXECUTE
-            </button>
-          </form>
+          {/* Terminal Footer Quick Buttons */}
+          <div className="p-2.5 bg-[#0d0205] border-t border-red-500/20 flex flex-wrap gap-2 text-[11px] font-mono">
+            <span className="text-red-500 text-[10px] self-center mr-1">QUICK INJECT:</span>
+            {['help', 'whoami', 'scan', 'cve', 'tools', 'skills', 'decrypt', 'clear'].map((cmd) => (
+              <button
+                key={cmd}
+                onClick={() => {
+                  setInputVal(cmd);
+                  inputRef.current?.focus();
+                }}
+                className="px-2 py-0.5 rounded bg-[#150207] hover:bg-red-950 border border-red-900/60 hover:border-red-500 text-slate-300 hover:text-white transition-colors"
+              >
+                {cmd}
+              </button>
+            ))}
+          </div>
         </div>
       </div>
     </section>

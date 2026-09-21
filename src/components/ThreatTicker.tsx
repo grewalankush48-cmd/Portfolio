@@ -1,40 +1,41 @@
 'use client';
 
-import { Shield, AlertTriangle, Radio, Activity, Cpu, Lock } from 'lucide-react';
+import { ShieldAlert, AlertOctagon, Radio, Activity, Cpu, Lock, Flame } from 'lucide-react';
 
 export default function ThreatTicker() {
   const telemetryItems = [
-    { icon: Shield, text: 'DEFENSE MATRIX: ACTIVE', color: 'text-emerald-400', badge: 'STATUS 200' },
-    { icon: Activity, text: 'PACKET SNIFFER: CAPTURING (SCAPY_V3)', color: 'text-cyan-400', badge: '0 FLOD' },
-    { icon: AlertTriangle, text: 'ZERO-DAY FEED: CVE-2026-2189 PATCH VERIFIED', color: 'text-amber-400', badge: 'CVSS 9.8' },
-    { icon: Lock, text: 'CIPHER SUITE: AES-256-GCM / TLS 1.3 STRICT', color: 'text-emerald-400', badge: 'ENCRYPTED' },
-    { icon: Radio, text: 'TARGET AUDIT: UPES_LAB // 0 DETECTED INTRUSIONS', color: 'text-cyan-400', badge: '100% HEALTH' },
-    { icon: Cpu, text: 'SYS_LOAD: 3.4% // MEMORY ALLOCATION: 184MB', color: 'text-slate-400', badge: 'OPTIMAL' },
-    { icon: Shield, text: 'FIREWALL HEURISTICS: REJECT WILD-CARDS (DROP)', color: 'text-purple-400', badge: 'RULE_SET_v4' },
-    { icon: Activity, text: 'AVAILABILITY: OPEN TO CYBERSECURITY INTERNSHIPS & ROLES', color: 'text-emerald-300', badge: 'HIRE_ME' },
+    { icon: AlertOctagon, text: 'DEFCON 1: HIGHEST READINESS', color: 'text-red-500', badge: 'CRITICAL_WATCH' },
+    { icon: ShieldAlert, text: 'RED TEAM BREACH DETECTOR: ARMED', color: 'text-rose-400', badge: 'ZERO_LEAKS' },
+    { icon: Activity, text: 'PACKET INTERCEPTOR: SCAPY SNIFFER v3.8 ACTIVE', color: 'text-red-400', badge: 'PROMISCUOUS' },
+    { icon: Flame, text: 'CVE-2026-2189 ZERO-DAY: REMEDIATION DEPLOYED', color: 'text-amber-500', badge: 'CVSS 9.8' },
+    { icon: Lock, text: 'CIPHER PROTOCOL: HARDENED TLS 1.3 / AES-256-GCM', color: 'text-red-400', badge: 'SEALED' },
+    { icon: Radio, text: 'UPES CYBER LAB: TARGET AIR-GAPPED // NO CVEs DETECTED', color: 'text-rose-300', badge: '100% HEALTH' },
+    { icon: Cpu, text: 'NEURAL SYSTEM LOAD: 4.2% // MEM_STABILITY: MAXIMUM', color: 'text-slate-400', badge: 'OPTIMAL' },
+    { icon: ShieldAlert, text: 'FIREWALL HEURISTICS: DROP ALL FORGED SYN-FLOODS', color: 'text-red-500', badge: 'IPTABLES_ARMED' },
+    { icon: Activity, text: 'SPECIALIZATION: OPEN TO SECURITY ANALYST & DEV ROLES', color: 'text-red-300', badge: 'HIRING_READY' },
   ];
 
   return (
-    <div className="w-full bg-[#050814]/90 border-y border-cyan-500/20 py-2 overflow-hidden flex items-center relative z-20 backdrop-blur-md">
-      {/* Left indicator label */}
-      <div className="hidden sm:flex items-center gap-2 pl-4 pr-3 py-0.5 bg-cyan-950/80 border-r border-cyan-500/30 text-[10px] font-mono font-bold text-cyan-300 shrink-0 uppercase tracking-widest z-10 shadow-lg">
-        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 animate-ping"></span>
-        <span>TELEMETRY_RADAR</span>
+    <div className="w-full bg-[#0d0104]/95 border-y border-red-500/30 py-2 overflow-hidden flex items-center relative z-20 backdrop-blur-md">
+      {/* Left DEFCON alert badge */}
+      <div className="hidden sm:flex items-center gap-2 pl-4 pr-3 py-0.5 bg-red-950/90 border-r border-red-500/40 text-[11px] font-mono font-bold text-red-300 shrink-0 uppercase tracking-widest z-10 shadow-[0_0_15px_rgba(255,0,51,0.3)]">
+        <span className="w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
+        <span className="font-orbitron text-red-400">RED_RADAR</span>
       </div>
 
-      {/* Ticker marquee container */}
+      {/* Infinite scrolling ticker */}
       <div className="flex whitespace-nowrap overflow-hidden flex-1 select-none">
         <div className="flex items-center gap-8 animate-ticker">
           {telemetryItems.concat(telemetryItems).map((item, idx) => {
             const Icon = item.icon;
             return (
               <div key={idx} className="flex items-center gap-2 font-mono text-xs">
-                <Icon className={`w-3.5 h-3.5 ${item.color}`} />
-                <span className="text-slate-300 tracking-wide font-medium">{item.text}</span>
-                <span className="px-1.5 py-0.2 rounded bg-slate-900 border border-slate-700/80 text-[10px] font-mono text-slate-400">
+                <Icon className={`w-3.5 h-3.5 ${item.color} animate-pulse`} />
+                <span className="text-slate-200 tracking-wide font-medium">{item.text}</span>
+                <span className="px-1.5 py-0.5 rounded bg-red-950/80 border border-red-500/40 text-[10px] font-mono text-red-300">
                   {item.badge}
                 </span>
-                <span className="text-slate-700 ml-4 font-bold">///</span>
+                <span className="text-red-900 ml-4 font-bold">///</span>
               </div>
             );
           })}

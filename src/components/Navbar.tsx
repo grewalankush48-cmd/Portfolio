@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from 'react';
 import { personalInfo } from '../data/portfolioData';
-import { Shield, Terminal, Menu, X, ExternalLink, Download, Radio } from 'lucide-react';
+import { ShieldAlert, Menu, X, ExternalLink, Download, Radio, Flame } from 'lucide-react';
 
 export default function Navbar() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -28,7 +28,7 @@ export default function Navbar() {
   const navLinks = [
     { name: 'HOME', href: '#home' },
     { name: 'OPERATIONS', href: '#operations' },
-    { name: 'SECURITY_TOOLS', href: '#operations' },
+    { name: 'ARSENAL', href: '#operations' },
     { name: 'TERMINAL', href: '#terminal' },
     { name: 'CONTACT', href: '#contact' },
   ];
@@ -36,46 +36,46 @@ export default function Navbar() {
   return (
     <nav
       id="main-navbar"
-      className="fixed top-0 left-0 w-full z-50 bg-[#04060f]/85 backdrop-blur-xl border-b border-cyan-500/20 shadow-xl shadow-black/60"
+      className="fixed top-0 left-0 w-full z-50 bg-[#080103]/90 backdrop-blur-xl border-b border-red-500/30 shadow-2xl shadow-black/80"
     >
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between">
         {/* Brand / Logo */}
         <a
           href="#home"
           id="nav-brand-logo"
-          className="flex items-center gap-3 font-mono group"
+          className="flex items-center gap-3 font-orbitron group"
         >
-          <div className="w-9 h-9 rounded bg-cyan-950/80 border border-cyan-400/50 flex items-center justify-center text-cyan-300 group-hover:border-cyan-300 group-hover:shadow-[0_0_15px_rgba(0,245,255,0.4)] transition-all relative">
-            <Shield className="w-4 h-4" />
-            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-emerald-400 animate-ping"></span>
+          <div className="w-9 h-9 rounded bg-red-950/80 border border-red-500/60 flex items-center justify-center text-red-400 group-hover:border-red-400 group-hover:shadow-[0_0_20px_#ff0033] transition-all relative">
+            <ShieldAlert className="w-4 h-4 text-red-400 animate-pulse" />
+            <span className="absolute -top-0.5 -right-0.5 w-2 h-2 rounded-full bg-red-500 animate-ping"></span>
           </div>
           <div className="flex flex-col">
-            <div className="text-sm font-bold tracking-tight text-white flex items-center gap-1.5">
+            <div className="text-sm font-bold tracking-wider text-white flex items-center gap-1.5">
               <span>{personalInfo.name}</span>
-              <span className="text-cyan-400 font-normal">{personalInfo.lastName}</span>
+              <span className="text-red-500 font-normal">{personalInfo.lastName}</span>
             </div>
-            <span className="text-[10px] text-slate-400 font-mono tracking-wider flex items-center gap-1">
-              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
-              SYS_ID // CYBER_DEFENSE
+            <span className="text-[10px] text-red-400/80 font-mono tracking-widest flex items-center gap-1">
+              <span className="w-1.5 h-1.5 rounded-full bg-red-500"></span>
+              DEFCON_1 // RED_TEAM
             </span>
           </div>
         </a>
 
-        {/* Live Audio/Frequency Visualizer & Military Clock */}
-        <div className="hidden lg:flex items-center gap-4 px-3 py-1 rounded bg-slate-950/90 border border-slate-800 font-mono text-[11px]">
-          {/* Animated Audio Equalizer */}
-          <div className="flex items-end gap-0.5 h-3.5 px-1">
-            <span className="w-1 bg-cyan-400 rounded-sm animate-pulse" style={{ height: '60%' }}></span>
-            <span className="w-1 bg-emerald-400 rounded-sm animate-pulse" style={{ height: '100%', animationDelay: '0.2s' }}></span>
-            <span className="w-1 bg-cyan-400 rounded-sm animate-pulse" style={{ height: '40%', animationDelay: '0.4s' }}></span>
-            <span className="w-1 bg-emerald-300 rounded-sm animate-pulse" style={{ height: '80%', animationDelay: '0.1s' }}></span>
-            <span className="w-1 bg-cyan-400 rounded-sm animate-pulse" style={{ height: '50%', animationDelay: '0.3s' }}></span>
+        {/* Live Audio Frequency Spectrum & Military LED Clock */}
+        <div className="hidden lg:flex items-center gap-4 px-3 py-1 rounded bg-[#0d0205] border border-red-900/60 font-mono text-[11px]">
+          {/* Blood Red Animated Equalizer */}
+          <div className="flex items-end gap-0.5 h-4 px-1">
+            <span className="w-1 bg-red-500 rounded-sm animate-pulse" style={{ height: '70%' }}></span>
+            <span className="w-1 bg-rose-400 rounded-sm animate-pulse" style={{ height: '100%', animationDelay: '0.2s' }}></span>
+            <span className="w-1 bg-red-600 rounded-sm animate-pulse" style={{ height: '45%', animationDelay: '0.4s' }}></span>
+            <span className="w-1 bg-red-400 rounded-sm animate-pulse" style={{ height: '85%', animationDelay: '0.1s' }}></span>
+            <span className="w-1 bg-rose-500 rounded-sm animate-pulse" style={{ height: '55%', animationDelay: '0.3s' }}></span>
           </div>
-          <span className="text-slate-500">|</span>
+          <span className="text-red-900">|</span>
           <div className="text-slate-300 flex items-center gap-1.5">
-            <Radio className="w-3 h-3 text-emerald-400 animate-pulse" />
-            <span className="text-slate-400">SYS_TIME:</span>
-            <span className="text-emerald-400 font-bold">{timeStr || '00:00:00'}</span>
+            <Radio className="w-3 h-3 text-red-500 animate-pulse" />
+            <span className="text-slate-400">RED_TIME:</span>
+            <span className="text-red-400 font-bold font-mono tracking-widest">{timeStr || '00:00:00'}</span>
           </div>
         </div>
 
@@ -86,10 +86,10 @@ export default function Navbar() {
               key={link.name}
               href={link.href}
               id={`nav-link-${link.name.toLowerCase()}`}
-              className="hover:text-cyan-400 transition-colors py-1 relative group tracking-wider"
+              className="hover:text-red-400 transition-colors py-1 relative group tracking-wider font-semibold"
             >
               {link.name}
-              <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-cyan-400 to-emerald-400 transition-all duration-200 group-hover:w-full"></span>
+              <span className="absolute bottom-0 left-0 w-0 h-[2px] bg-gradient-to-r from-red-500 via-rose-500 to-red-400 transition-all duration-200 group-hover:w-full shadow-[0_0_8px_#ff0033]"></span>
             </a>
           ))}
         </div>
@@ -101,9 +101,9 @@ export default function Navbar() {
             target="_blank"
             rel="noreferrer"
             id="nav-resume-btn"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border border-cyan-500/30 bg-cyan-950/40 hover:bg-cyan-900/60 text-cyan-200 hover:border-cyan-400 transition-all shadow-sm"
+            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-medium border border-red-500/40 bg-red-950/40 hover:bg-red-900/60 text-red-200 hover:border-red-400 transition-all shadow-sm"
           >
-            <Download className="w-3.5 h-3.5 text-cyan-400" />
+            <Download className="w-3.5 h-3.5 text-red-400" />
             <span>RESUME.PDF</span>
           </a>
           <a
@@ -111,7 +111,7 @@ export default function Navbar() {
             target="_blank"
             rel="noreferrer"
             id="nav-github-btn"
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded text-xs font-bold bg-gradient-to-r from-cyan-400 to-emerald-400 hover:from-cyan-300 hover:to-emerald-300 text-slate-950 transition-all shadow-lg shadow-cyan-500/20"
+            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded text-xs font-bold bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 text-white transition-all shadow-lg shadow-red-600/30 hover:shadow-red-500/50"
           >
             <span>GITHUB</span>
             <ExternalLink className="w-3 h-3" />
@@ -123,9 +123,9 @@ export default function Navbar() {
           onClick={() => setMenuOpen(!menuOpen)}
           id="mobile-menu-btn"
           aria-label="Toggle navigation menu"
-          className="md:hidden p-2 rounded text-slate-400 hover:text-white hover:bg-slate-900 border border-slate-800 transition-colors"
+          className="md:hidden p-2 rounded text-red-400 hover:text-white hover:bg-red-950/80 border border-red-900/60 transition-colors"
         >
-          {menuOpen ? <X className="w-5 h-5 text-cyan-400" /> : <Menu className="w-5 h-5 text-cyan-400" />}
+          {menuOpen ? <X className="w-5 h-5 text-red-400" /> : <Menu className="w-5 h-5 text-red-400" />}
         </button>
       </div>
 
@@ -133,14 +133,14 @@ export default function Navbar() {
       {menuOpen && (
         <div
           id="mobile-drawer"
-          className="md:hidden bg-[#04060f]/98 border-b border-cyan-500/30 px-6 py-5 space-y-3 font-mono text-sm backdrop-blur-2xl"
+          className="md:hidden bg-[#080103]/98 border-b border-red-500/40 px-6 py-5 space-y-3 font-mono text-sm backdrop-blur-2xl"
         >
           {navLinks.map((link) => (
             <a
               key={link.name}
               href={link.href}
               onClick={() => setMenuOpen(false)}
-              className="block py-2 text-slate-300 hover:text-cyan-400 border-b border-slate-900 last:border-b-0"
+              className="block py-2 text-slate-300 hover:text-red-400 border-b border-red-950 last:border-b-0"
             >
               {link.name}
             </a>
@@ -151,7 +151,7 @@ export default function Navbar() {
               target="_blank"
               rel="noreferrer"
               onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-center gap-2 py-2.5 rounded text-xs border border-cyan-500/30 bg-cyan-950/50 text-cyan-300"
+              className="flex items-center justify-center gap-2 py-2.5 rounded text-xs border border-red-500/40 bg-red-950/50 text-red-300"
             >
               <Download className="w-3.5 h-3.5" />
               Download Resume (PDF)
@@ -161,7 +161,7 @@ export default function Navbar() {
               target="_blank"
               rel="noreferrer"
               onClick={() => setMenuOpen(false)}
-              className="flex items-center justify-center gap-2 py-2.5 rounded text-xs bg-gradient-to-r from-cyan-400 to-emerald-400 text-slate-950 font-bold"
+              className="flex items-center justify-center gap-2 py-2.5 rounded text-xs bg-gradient-to-r from-red-600 to-rose-600 text-white font-bold"
             >
               <span>View GitHub Profile</span>
               <ExternalLink className="w-3.5 h-3.5" />

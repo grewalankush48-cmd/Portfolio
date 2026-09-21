@@ -8,7 +8,7 @@ import Footer from '../components/Footer';
 
 export default function Home() {
   return (
-    <div className="flex flex-col min-h-screen bg-[#03040b] text-slate-100 relative selection:bg-cyan-400 selection:text-slate-950 font-mono">
+    <div className="flex flex-col min-h-screen bg-[#060103] text-slate-100 relative selection:bg-[#ff0033] selection:text-white font-tech">
       {/* Infinite Cyber Constellation & Scanline Background */}
       <CyberMatrixBackground />
 
