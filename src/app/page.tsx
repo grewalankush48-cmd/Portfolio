@@ -1,8 +1,8 @@
-import { personalInfo, skillsData, projectsData, educationData } from './data/portfolioData';
+import { personalInfo, skills, projects, education } from "./data";
 
-export default function App() {
+export default function Home() {
   return (
-    <div className="max-w-2xl mx-auto px-6 py-12 space-y-10 text-slate-300">
+    <main className="max-w-2xl mx-auto px-6 py-12 space-y-10 text-slate-300">
       {/* Header */}
       <header className="space-y-3 border-b border-slate-800 pb-6" id="header">
         <h1 className="text-3xl font-bold text-white tracking-tight">
@@ -12,7 +12,7 @@ export default function App() {
           Cybersecurity Student &amp; Python Developer based in {personalInfo.location}.
         </p>
 
-        {/* Quick Links */}
+        {/* Links */}
         <div className="flex flex-wrap gap-4 text-sm pt-2">
           <a
             href={`mailto:${personalInfo.email}`}
@@ -40,7 +40,7 @@ export default function App() {
           </a>
           <span>·</span>
           <a
-            href="/Ankush_Grewal_Resume.pdf"
+            href={personalInfo.resumePath}
             target="_blank"
             rel="noreferrer"
             id="link-resume"
@@ -56,7 +56,7 @@ export default function App() {
           About Me
         </h2>
         <p className="text-sm leading-relaxed text-slate-300">
-          Hi! I am Ankush Grewal, a Computer Applications student passionate about ethical hacking,
+          Hi! I am {personalInfo.fullName}, a Computer Applications student passionate about ethical hacking,
           network security, and building practical defensive security tools.
         </p>
         <p className="text-sm leading-relaxed text-slate-300">
@@ -71,9 +71,12 @@ export default function App() {
           Skills
         </h2>
         <ul className="list-disc list-inside space-y-1.5 text-sm text-slate-300">
-          <li><strong>Languages:</strong> Python, JavaScript, HTML/CSS, Bash</li>
-          <li><strong>Cybersecurity:</strong> Ethical Hacking, Vulnerability Assessment, Web Security Basics</li>
-          <li><strong>Operating Systems &amp; Tools:</strong> Kali Linux, Linux CLI, Git, VS Code</li>
+          {skills.map((skill, index) => (
+            <li key={index}>
+              <strong>{skill.category}: </strong>
+              <span>{skill.items}</span>
+            </li>
+          ))}
         </ul>
       </section>
 
@@ -84,8 +87,8 @@ export default function App() {
         </h2>
 
         <div className="space-y-5">
-          {projectsData.map((project) => (
-            <div key={project.number} className="space-y-1.5" id={`project-${project.number}`}>
+          {projects.map((project) => (
+            <div key={project.id} className="space-y-1.5" id={`project-${project.id}`}>
               <div className="flex items-center justify-between">
                 <h3 className="text-base font-semibold text-white">
                   {project.title}
@@ -103,7 +106,7 @@ export default function App() {
                 {project.description}
               </p>
               <p className="text-xs text-slate-500">
-                Technologies: {project.tags.join(', ')}
+                Technologies: {project.tags.join(", ")}
               </p>
             </div>
           ))}
@@ -116,9 +119,9 @@ export default function App() {
           Education
         </h2>
         <div className="space-y-3 text-sm">
-          {educationData.map((item) => (
-            <div key={item.number} id={`edu-${item.number}`}>
-              <p className="font-semibold text-white">{item.title}</p>
+          {education.map((item, index) => (
+            <div key={index}>
+              <p className="font-semibold text-white">{item.degree}</p>
               <p className="text-slate-400">{item.institution} ({item.period})</p>
             </div>
           ))}
@@ -158,6 +161,6 @@ export default function App() {
         <span>© {new Date().getFullYear()} {personalInfo.fullName}</span>
         <span>Personal Portfolio</span>
       </footer>
-    </div>
+    </main>
   );
 }
